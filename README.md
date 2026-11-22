@@ -2,7 +2,9 @@
 
 ![Story Stick editor screenshot](assets/screenshots/story-stick.jpg "Story Stick v0.6.7 desktop workspace")
 
-[![Try Story Stick in your browser](https://img.shields.io/badge/Try_StoryStick_in_your_browser-d63b32?style=for-the-badge)](https://grillergeek.github.io/story-stick/play/)
+[![Try Story Stick in your browser](https://img.shields.io/badge/Try_Story_Stick_in_your_browser-d63b32?style=for-the-badge)](https://grillergeek.github.io/story-stick/play/)
+
+Story Stick began as a fork of [BenchUp](https://github.com/BenchUp3D/editor). Design woodworking projects away from the shop.
 
 ## Download for desktop
 
@@ -376,9 +378,8 @@ The viewport uses depth-tested filled triangles and antialiased triangle strips 
 
 ### Account server
 
-Google login and account sessions are provided by the separate Ketchup Server
-repository at `/home/dcoulombe/dev/ketchup-server`. See its `README.md` for OAuth
-configuration and startup instructions.
+Google login and account sessions require an external account server. Configure
+its address with `STORY_STICK_SERVER_URL` or `--server-url`.
 
 The account server is deployment configuration, with no address field in the app.
 Launch the desktop app with `story-stick --server-url https://accounts.example.com`
@@ -430,49 +431,9 @@ the default branch synchronize automatically. Set the repository variable
 and publish its own releases before its browser and download links are available.
 
 
-### Story Stick identity migration
+### Identity
 
-The application, desktop package, and bundle ID are now `Story Stick` /
-`io.github.GrillerGeek.StoryStick`; the executable is `story-stick` and new
-projects use `.bup`. Existing `.k3d` and `.ketchup` projects remain readable.
-Desktop workspaces, update preferences, restart metadata, and inspector settings
-are copied from the old KetchUp locations on first launch without deleting the
-original data. Browser storage migrates on the same origin; a change of hostname
-requires exporting projects before moving because browsers isolate local storage.
-The old `KETCHUP_DATA_DIR`, `KETCHUP_SERVER_URL`, and
-`KETCHUP_UPDATE_REPOSITORY` variables remain accepted as compatibility aliases;
-the `STORY_STICK_*` equivalents take precedence.
-
-The official migration is a transfer/rename of the **original** repository from
-`Ketchup3D/app` to `BenchUp3D/editor`. Transfer and rename may happen in either
-order. Existing 0.6.5 applications retain the original GitHub URL in their binary;
-GitHub's repository redirects let those applications reach the new releases and
-download their assets. Do not create a new repository or fork at `Ketchup3D/app`:
-[GitHub removes the transfer redirects when the old location is reused](https://docs.github.com/en/repositories/creating-and-managing-repositories/transferring-a-repository).
-The organization/repository transfer itself remains a GitHub administration step.
-
-Before an official release builds, CI runs:
-
-```sh
-python3 -B scripts/verify_update_transfer.py --repository GrillerGeek/story-stick
-```
-
-This uses public, unauthenticated GitHub API requests, like the installed updater.
-It requires the old and new repository URLs to return the same numeric repository
-ID and the same releases. A missing redirect, an incorrect transfer, or a recreated
-old repository blocks the release before publication. Forks skip this official
-transfer requirement and continue using their own release source.
-
-The first Story Stick release must be newer than 0.6.5 (for example 0.6.6). Packaging
-explicitly uses `--delta None`; publication validation rejects delta feeds so old
-clients receive a complete replacement with the new app ID and executable. Keep
-the existing `win-x64`, `osx-arm64`, and `linux-x64` channels. New official builds
-normalize both intermediate repository names to `GrillerGeek/story-stick`.
-
-The pinned Velopack 1.2.161 client is exercised in CI with an old 0.6.5 manifest,
-HTTP transfer/rename redirects, synthetic full packages and real checksums on all
-three channels. It checks discovery, download validation, pending-update discovery,
-and the new executable metadata. The test intentionally does not use Story Stick's
-new update-preparation code, which is absent from the already-installed clients.
-An actual installed-app replacement/restart with signed release packages remains
-a separate OS-level verification; the fixture test does not execute an installer.
+The application, desktop package, and bundle ID are `Story Stick` /
+`io.github.GrillerGeek.StoryStick`; the executable is `story-stick`. New projects
+use `.bup`, and `.k3d` and `.ketchup` projects remain readable. Packaging uses
+`--delta None` and publishes the `win-x64`, `osx-arm64`, and `linux-x64` channels.

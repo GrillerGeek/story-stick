@@ -25,7 +25,7 @@ Whenever the user asks to push a new version tag:
 
 # Compilation checks
 
-Trunk output is saved to `/tmp/ketchup-trunk.log` (started with `trunk serve 2>&1 | tee /tmp/ketchup-trunk.log`). Read this file for the compilation check.
+Trunk output is saved to `/tmp/story-stick-trunk.log` (started with `trunk serve 2>&1 | tee /tmp/story-stick-trunk.log`). Read this file for the compilation check.
 
 Only at the end of each change, immediately before reporting completion, check the currently running Story Stick process, if one exists, and its associated compiler or development-server output for new compilation errors. Perform this check once per fix, not during intermediate edits. Use the existing process and logs; do not start a new build just for this check. If the output is unavailable, report that the check could not be completed.
 
@@ -41,8 +41,7 @@ All current and future right-sidebar tables use `crate::inspector_table::Inspect
 
 # Project names
 
-- “Story Stick” (formerly “KetchUp” / “Ketchup app”) refers to the existing Rust desktop/WebAssembly client at this repository root.
-- “Ketchup Server” refers to the separate PHP repository at `/home/dcoulombe/dev/ketchup-server`. When the user names Ketchup Server, scope the work to that directory and read `/home/dcoulombe/dev/ketchup-server/AGENTS.md`.
+- “Story Stick” (formerly BenchUp / KetchUp) refers to the Rust desktop/WebAssembly client at this repository root.
 
 # Application language
 
