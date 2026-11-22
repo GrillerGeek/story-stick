@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Regenerate BenchUp's vector mark, platform icons, and egui geometry.
+"""Regenerate Story Stick's vector mark, platform icons, and egui geometry.
 
 Requires Pillow: python3 -m pip install Pillow
 Run from any directory: python3 scripts/generate_branding.py
@@ -72,7 +72,7 @@ def svg(square=True):
                          ' '.join(f'{x},{y}' for x, y in points) + '"/>'
                          for color, points in paths)
     return ('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-labelledby="title">\n'
-            '  <title id="title">BenchUp</title>\n' + background + polygons + '\n</svg>\n')
+            '  <title id="title">Story Stick</title>\n' + background + polygons + '\n</svg>\n')
 
 
 def raster(size, rounded=True, padding=0):
@@ -124,7 +124,7 @@ if __name__ == '__main__':
     raster(180, rounded=False).save(OUT / 'apple-touch-icon.png')
     raster(512, rounded=False, padding=8).save(OUT / 'icon-maskable-512.png')
     raster(256).save(OUT / 'favicon.ico', sizes=[(16, 16), (32, 32), (48, 48), (64, 64), (128, 128), (256, 256)])
-    raster(1024).save(OUT / 'benchup.icns')
-    rust_path = ROOT / 'crates/benchup-app/src/brand_mark.rs'
+    raster(1024).save(OUT / 'story-stick.icns')
+    rust_path = ROOT / 'crates/story-stick-app/src/brand_mark.rs'
     rust_path.write_text(rust())
     subprocess.run(['rustfmt', '--edition', '2024', str(rust_path)], check=True)

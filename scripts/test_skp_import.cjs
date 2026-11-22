@@ -3,14 +3,14 @@ const {test} = require('node:test');
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const path = require('node:path');
-const base = path.resolve(__dirname, '../crates/benchup-app');
+const base = path.resolve(__dirname, '../crates/story-stick-app');
 const rust = fs.readFileSync(path.join(base, 'src/interchange.rs'), 'utf8');
 const concat = rust.split('const SKP_READER: &str = concat!(')[1].split('\n);')[0];
 // Read the very same concat/include_str inputs that Rust embeds.
 const source = Array.from(concat.matchAll(/include_str!\("([^"]+)"\)|"(?:\\.|[^"\\])*"/g), m =>
     m[1] ? fs.readFileSync(path.resolve(base, 'src', m[1]), 'utf8') : JSON.parse(m[0])).join('');
-const read = new Function('bytes', source + '\nreturn JSON.parse(benchupImport(bytes));');
-const modules = new Function(source + '\nreturn benchupModules;')();
+const read = new Function('bytes', source + '\nreturn JSON.parse(storyStickImport(bytes));');
+const modules = new Function(source + '\nreturn storyStickModules;')();
 const sdk = modules.openskp;
 const fixture = path.join(base, 'tests/fixtures/placed-window.skp');
 
@@ -104,12 +104,12 @@ test('precision fixture passes tiny faces and warped holed boundaries to shared 
 
 test('recursive definitions and missing references fail', () => {
     const adapter=fs.readFileSync(path.join(base,'src/skp_adapter.js'),'utf8');
-    const convert=new Function('source', `const benchupModules={openskp:{parseSkp:()=>source}};${adapter};return benchupImport(new Uint8Array(0));`);
+    const convert=new Function('source', `const storyStickModules={openskp:{parseSkp:()=>source}};${adapter};return storyStickImport(new Uint8Array(0));`);
     const root={id:1,vertices:[],edges:[],faces:[],instances:[{refIdx:1,matrix:[]}]};
     const source={root,materials:[],layers:[],definitions:new Map([[1,root]])};
-    assert.throws(()=>convert(source), /^Error: benchup\.skp\.nested_components$/);
+    assert.throws(()=>convert(source), /^Error: story-stick\.skp\.nested_components$/);
     source.definitions.clear();
-    assert.throws(()=>convert(source), /^Error: benchup\.skp\.missing_definition$/);
+    assert.throws(()=>convert(source), /^Error: story-stick\.skp\.missing_definition$/);
 });
 
 

@@ -33,4 +33,4 @@ jobs:
           key: pr-core
 
       - name: Test core
-        run: cargo test --locked -p benchup-core
+        run: cargo test --locked -p story-stick-core

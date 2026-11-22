@@ -7,7 +7,7 @@ import {readFile, mkdtemp, rm, readdir, access} from 'node:fs/promises';
 import {spawn} from 'node:child_process';
 import {homedir, tmpdir} from 'node:os';
 import {join} from 'node:path';
-const source = await readFile(new URL('../crates/benchup-app/src/browser_storage.js', import.meta.url));
+const source = await readFile(new URL('../crates/story-stick-app/src/browser_storage.js', import.meta.url));
 const candidates = [process.env.CHROME_BIN, '/usr/bin/chromium', '/usr/bin/google-chrome'];
 for (const name of (await readdir(join(homedir(), '.cache/ms-playwright')).catch(() => [])).filter(n => /^chromium-\d+$/.test(n)).sort().reverse()) {
     candidates.push(join(homedir(), '.cache/ms-playwright', name, 'chrome-linux64/chrome'));
@@ -25,7 +25,7 @@ const server = createServer((req, res) => {
 });
 await new Promise(resolve => server.listen(0, '127.0.0.1', resolve));
 const url = `http://127.0.0.1:${server.address().port}/`;
-const profile = await mkdtemp(join(tmpdir(), 'benchup-storage-test-'));
+const profile = await mkdtemp(join(tmpdir(), 'story-stick-storage-test-'));
 const browser = spawn(executable, ['--headless=new', '--no-sandbox', '--disable-dev-shm-usage',
     '--no-first-run', '--no-default-browser-check', '--remote-debugging-port=0', `--user-data-dir=${profile}`, 'about:blank'],
     {stdio: ['ignore', 'ignore', 'pipe']});
@@ -77,21 +77,21 @@ try {
         await load();
     }
     const result = await evaluate(`(async()=>{
-        localStorage.setItem('benchup.document.v1', '{"name":"Legacy project"}');
-        localStorage.setItem('benchup.edits.v1', '{"legacyEdits":true}');
-        localStorage.setItem('benchup.selection.v1', '{"selected":[7]}');
+        localStorage.setItem('story-stick.document.v1', '{"name":"Legacy project"}');
+        localStorage.setItem('story-stick.edits.v1', '{"legacyEdits":true}');
+        localStorage.setItem('story-stick.selection.v1', '{"selected":[7]}');
         globalThis.recovery = await import('/browser_storage.js');
         await recovery.loadRecovery();
-        return {document:recovery.readRecovery('benchup.document.v1'),
-            edits:recovery.readRecovery('benchup.edits.v1'), selection:recovery.readRecovery('benchup.selection.v1'),
-            oldDocument:localStorage.getItem('benchup.document.v1')};
+        return {document:recovery.readRecovery('story-stick.document.v1'),
+            edits:recovery.readRecovery('story-stick.edits.v1'), selection:recovery.readRecovery('story-stick.selection.v1'),
+            oldDocument:localStorage.getItem('story-stick.document.v1')};
     })()`);
     assert.equal(JSON.parse(result.document).name, 'Legacy project');
     assert.equal(JSON.parse(result.edits).legacyEdits, true);
     assert.deepEqual(JSON.parse(result.selection).selected, [7]);
     assert.equal(result.oldDocument, null);
     await reload();
-    assert.equal(await evaluate(`JSON.parse(recovery.readRecovery('benchup.document.v1')).name`), 'Legacy project');
+    assert.equal(await evaluate(`JSON.parse(recovery.readRecovery('story-stick.document.v1')).name`), 'Legacy project');
     console.log('PASS: legacy snapshot and overlays migrate atomically and reload.');
 
     const size = await evaluate(`(()=>{
@@ -101,20 +101,20 @@ try {
         let quotaExceeded = false;
         try {localStorage.setItem('oversized-test',snapshot);} catch(e) {quotaExceeded=e.name==='QuotaExceededError';}
         if (!quotaExceeded) throw Error('Fixture must exceed localStorage quota.');
-        recovery.writeRecovery('benchup.document.v1',snapshot,true);
+        recovery.writeRecovery('story-stick.document.v1',snapshot,true);
         if (!recovery.recoveryPending()) throw Error('Must stay pending until IndexedDB commits.');
-        recovery.writeRecovery('benchup.edits.v1',JSON.stringify({opacity:0.5,zoom:2}),false);
-        recovery.writeRecovery('benchup.edits.v1',JSON.stringify({opacity:0.25,zoom:3,rotation:90}),false);
-        recovery.writeRecovery('benchup.selection.v1','{"selected":[1]}',false);
+        recovery.writeRecovery('story-stick.edits.v1',JSON.stringify({opacity:0.5,zoom:2}),false);
+        recovery.writeRecovery('story-stick.edits.v1',JSON.stringify({opacity:0.25,zoom:3,rotation:90}),false);
+        recovery.writeRecovery('story-stick.selection.v1','{"selected":[1]}',false);
         return snapshot.length;
     })()`);
     await until(() => evaluate('!recovery.recoveryPending()'), 'large image commit');
     assert.equal(await evaluate('recovery.takeRecoveryResult()'), '');
     await reload();
-    assert.deepEqual(await evaluate(`(()=>{const doc=JSON.parse(recovery.readRecovery('benchup.document.v1'));return {name:doc.name,bytes:doc.model.image_assets.photo.png.length,lastByte:doc.model.image_assets.photo.png.at(-1)}})()`),
+    assert.deepEqual(await evaluate(`(()=>{const doc=JSON.parse(recovery.readRecovery('story-stick.document.v1'));return {name:doc.name,bytes:doc.model.image_assets.photo.png.length,lastByte:doc.model.image_assets.photo.png.at(-1)}})()`),
         {name:'Image project',bytes:2000000,lastByte:127});
-    assert.deepEqual(await evaluate(`JSON.parse(recovery.readRecovery('benchup.edits.v1'))`), {opacity:0.25,zoom:3,rotation:90});
-    assert.deepEqual(await evaluate(`JSON.parse(recovery.readRecovery('benchup.selection.v1')).selected`), [1]);
+    assert.deepEqual(await evaluate(`JSON.parse(recovery.readRecovery('story-stick.edits.v1'))`), {opacity:0.25,zoom:3,rotation:90});
+    assert.deepEqual(await evaluate(`JSON.parse(recovery.readRecovery('story-stick.selection.v1')).selected`), [1]);
     console.log(`PASS: ${size} characters exceed localStorage quota but image and rapid edits survive refresh.`);
 
     await evaluate(`(()=>{
@@ -122,55 +122,55 @@ try {
         IDBObjectStore.prototype.put=function(value,key){
             // A duplicate key makes the request fail asynchronously and aborts
             // the transaction, even when an explicit commit was submitted.
-            return key==='benchup.edits.v1' ? this.add(value,key) : original.call(this,value,key);
+            return key==='story-stick.edits.v1' ? this.add(value,key) : original.call(this,value,key);
         };
-        recovery.writeRecovery('benchup.edits.v1','{"lost":true}',false);
+        recovery.writeRecovery('story-stick.edits.v1','{"lost":true}',false);
         IDBObjectStore.prototype.put=original;
-        recovery.writeRecovery('benchup.selection.v1','{"selected":[]}',false);
+        recovery.writeRecovery('story-stick.selection.v1','{"selected":[]}',false);
         return true;
     })()`);
     await until(() => evaluate('!recovery.recoveryPending()'), 'failed transaction');
     assert.match(await evaluate('recovery.takeRecoveryResult()'), /Could not save workspace/);
     await reload();
-    assert.deepEqual(await evaluate(`JSON.parse(recovery.readRecovery('benchup.edits.v1'))`), {opacity:0.25,zoom:3,rotation:90});
+    assert.deepEqual(await evaluate(`JSON.parse(recovery.readRecovery('story-stick.edits.v1'))`), {opacity:0.25,zoom:3,rotation:90});
     console.log('PASS: aborted writes report failure even after a successful selection save; committed changes remain intact.');
 
     await evaluate(`(()=>{
-        recovery.writeRecovery('benchup.edits.v1','{"obsolete":true}',false);
-        recovery.writeRecovery('benchup.document.v1','{"name":"Latest snapshot"}',true);
+        recovery.writeRecovery('story-stick.edits.v1','{"obsolete":true}',false);
+        recovery.writeRecovery('story-stick.document.v1','{"name":"Latest snapshot"}',true);
         return true;
     })()`);
     await until(() => evaluate('!recovery.recoveryPending()'), 'snapshot compaction');
     await reload();
-    assert.equal(await evaluate(`JSON.parse(recovery.readRecovery('benchup.document.v1')).name`), 'Latest snapshot');
-    assert.equal(await evaluate(`recovery.readRecovery('benchup.edits.v1') ?? null`), null);
+    assert.equal(await evaluate(`JSON.parse(recovery.readRecovery('story-stick.document.v1')).name`), 'Latest snapshot');
+    assert.equal(await evaluate(`recovery.readRecovery('story-stick.edits.v1') ?? null`), null);
     console.log('PASS: snapshot compaction removes stale edits in the same transaction.');
 
     await evaluate(`(()=>{
-        recovery.writeRecovery('benchup.document.v1','{"name":"Earlier successful save"}',true);
+        recovery.writeRecovery('story-stick.document.v1','{"name":"Earlier successful save"}',true);
         const original=IDBObjectStore.prototype.put;
         IDBObjectStore.prototype.put=()=>{throw new DOMException('Storage full','QuotaExceededError');};
-        try {recovery.writeRecovery('benchup.edits.v1','{"latest":true}',false);} catch(_) {}
+        try {recovery.writeRecovery('story-stick.edits.v1','{"latest":true}',false);} catch(_) {}
         finally {IDBObjectStore.prototype.put=original;}
         return true;
     })()`);
     await until(() => evaluate('!recovery.recoveryPending()'), 'synchronous save failure');
     assert.match(await evaluate('recovery.takeRecoveryResult()'), /Storage full/);
-    await evaluate(`recovery.writeRecovery('benchup.document.v1','{"name":"Retry succeeded"}',true)`);
+    await evaluate(`recovery.writeRecovery('story-stick.document.v1','{"name":"Retry succeeded"}',true)`);
     await until(() => evaluate('!recovery.recoveryPending()'), 'retry');
     assert.equal(await evaluate('recovery.takeRecoveryResult()'), '');
     await reload();
-    assert.equal(await evaluate(`JSON.parse(recovery.readRecovery('benchup.document.v1')).name`), 'Retry succeeded');
+    assert.equal(await evaluate(`JSON.parse(recovery.readRecovery('story-stick.document.v1')).name`), 'Retry succeeded');
     console.log('PASS: an earlier success cannot mask a newer submission failure; a committed retry clears the error.');
 
     await evaluate(`(()=>{
-        recovery.writeRecovery('benchup.document.v1','{"name":"Immediate refresh"}',true);
-        recovery.writeRecovery('benchup.edits.v1','{"opacity":0.2,"rotation":45}',false);
+        recovery.writeRecovery('story-stick.document.v1','{"name":"Immediate refresh"}',true);
+        recovery.writeRecovery('story-stick.edits.v1','{"opacity":0.2,"rotation":45}',false);
         return true;
     })()`);
     await reload();
-    assert.equal(await evaluate(`JSON.parse(recovery.readRecovery('benchup.document.v1')).name`), 'Immediate refresh');
-    assert.deepEqual(await evaluate(`JSON.parse(recovery.readRecovery('benchup.edits.v1'))`), {opacity:0.2,rotation:45});
+    assert.equal(await evaluate(`JSON.parse(recovery.readRecovery('story-stick.document.v1')).name`), 'Immediate refresh');
+    assert.deepEqual(await evaluate(`JSON.parse(recovery.readRecovery('story-stick.edits.v1'))`), {opacity:0.2,rotation:45});
     console.log('PASS: immediately refreshing after submitting edits preserves the latest write.');
 
 
@@ -178,18 +178,18 @@ try {
     await evaluate(`(async()=>{
         const original = indexedDB.open;
         indexedDB.open = () => { throw new DOMException('Storage blocked','SecurityError'); };
-        localStorage.setItem('benchup.document.v1','{"name":"Fallback project"}');
+        localStorage.setItem('story-stick.document.v1','{"name":"Fallback project"}');
         try {
             globalThis.fallback = await import('/browser_storage.js?fallback');
             await fallback.loadRecovery();
-            fallback.writeRecovery('benchup.document.v1','{"name":"Fallback saved"}',true);
+            fallback.writeRecovery('story-stick.document.v1','{"name":"Fallback saved"}',true);
         } finally { indexedDB.open = original; }
         return true;
     })()`);
-    assert.equal(await evaluate(`JSON.parse(fallback.readRecovery('benchup.document.v1')).name`), 'Fallback saved');
-    assert.equal(await evaluate(`JSON.parse(localStorage.getItem('benchup.document.v1')).name`), 'Fallback saved');
+    assert.equal(await evaluate(`JSON.parse(fallback.readRecovery('story-stick.document.v1')).name`), 'Fallback saved');
+    assert.equal(await evaluate(`JSON.parse(localStorage.getItem('story-stick.document.v1')).name`), 'Fallback saved');
     assert.equal(await evaluate(`fallback.recoveryPending()`), false);
-    assert.equal(await evaluate(`(()=>{try {fallback.writeRecovery('benchup.document.v1','x'.repeat(6*1024*1024),true);return false;}catch(e){return e.name==='QuotaExceededError';}})()`), true);
+    assert.equal(await evaluate(`(()=>{try {fallback.writeRecovery('story-stick.document.v1','x'.repeat(6*1024*1024),true);return false;}catch(e){return e.name==='QuotaExceededError';}})()`), true);
     console.log('PASS: blocked IndexedDB falls back to legacy storage and reports quota failures.');
 
 } finally {

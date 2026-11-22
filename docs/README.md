@@ -1,4 +1,4 @@
-# BenchUp documentation
+# Story Stick documentation
 
 Guides for using the desktop and browser editor.
 

@@ -21,8 +21,8 @@ def main():
     if not all(values):
         raise SystemExit("macOS signing secrets are incomplete; configure every documented secret.")
     directory = Path(os.environ["RUNNER_TEMP"])
-    certificate = directory / "benchup-certificates.p12"
-    keychain = directory / "benchup-signing.keychain-db"
+    certificate = directory / "story-stick-certificates.p12"
+    keychain = directory / "story-stick-signing.keychain-db"
     password = secrets.token_urlsafe(32)
     # GitHub must mask our generated keychain password as well as input secrets.
     print(f"::add-mask::{password}", flush=True)
@@ -44,9 +44,9 @@ def main():
         run("security", "list-keychains", "-d", "user", "-s", str(keychain))
         run("security", "import", str(certificate), "-P", values[1], "-A", "-t", "cert", "-f", "pkcs12", "-k", str(keychain))
         run("security", "set-key-partition-list", "-S", "apple-tool:,apple:", "-s", "-k", password, str(keychain))
-        run("xcrun", "notarytool", "store-credentials", "benchup-notary", "--apple-id", values[4], "--team-id", values[5], "--password", values[6], "--keychain", str(keychain))
+        run("xcrun", "notarytool", "store-credentials", "story-stick-notary", "--apple-id", values[4], "--team-id", values[5], "--password", values[6], "--keychain", str(keychain))
         with Path(os.environ["GITHUB_ENV"]).open("a", encoding="utf-8") as output:
-            output.write(f"BENCHUP_MACOS_KEYCHAIN={keychain}\nBENCHUP_MACOS_NOTARY_PROFILE=benchup-notary\n")
+            output.write(f"STORY_STICK_MACOS_KEYCHAIN={keychain}\nSTORY_STICK_MACOS_NOTARY_PROFILE=story-stick-notary\n")
     finally:
         certificate.unlink(missing_ok=True)
 

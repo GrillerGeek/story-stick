@@ -4,8 +4,8 @@ import test from 'node:test';
 
 // Load the same ES module wasm-bindgen bundles, without requiring package.json
 // or a browser just to exercise WebHID connection and report lifecycle rules.
-const source = await readFile(process.env.BENCHUP_SPACE_MOUSE_SOURCE ??
-    new URL('../crates/benchup-app/src/space_mouse_web.js', import.meta.url), 'utf8');
+const source = await readFile(process.env.STORY_STICK_SPACE_MOUSE_SOURCE ??
+    new URL('../crates/story-stick-app/src/space_mouse_web.js', import.meta.url), 'utf8');
 const { createSpaceMouse } = await import(`data:text/javascript;base64,${Buffer.from(source).toString('base64')}`);
 const settle = () => new Promise(resolve => setImmediate(resolve));
 function deferred() {

@@ -6,11 +6,11 @@ const path = require('node:path');
 const {gzipSync, gunzipSync} = require('node:zlib');
 
 const launchSave = new Function('window', 'name', 'contents', 'description', fs.readFileSync(
-    path.join(__dirname, '../crates/benchup-app/src/project_save.js'), 'utf8',
+    path.join(__dirname, '../crates/story-stick-app/src/project_save.js'), 'utf8',
 ));
 const catalog = require('../assets/i18n/en.json');
 const save = (window, name, contents) =>
-    launchSave(window, name, contents, catalog['project_files.benchup_project']);
+    launchSave(window, name, contents, catalog['project_files.story_stick_project']);
 const projectJson = '{"name":"House"}';
 const compressedProject = new Uint8Array(gzipSync(projectJson));
 
@@ -22,8 +22,8 @@ test('save prompts immediately and reports the chosen name only after committing
         showSaveFilePicker(options) {
             events.push('picker');
             assert.equal(options.suggestedName, 'House.bup');
-            assert.equal(options.id, 'benchup-project-save');
-            assert.equal(options.types[0].description, 'BenchUp project');
+            assert.equal(options.id, 'story-stick-project-save');
+            assert.equal(options.types[0].description, 'Story Stick project');
             assert.deepEqual(options.types[0].accept, {'application/gzip': ['.bup', '.k3d', '.ketchup']});
             return Promise.resolve({
                 name: 'New house.bup',
@@ -117,7 +117,7 @@ test('saving to either supported extension reports the chosen name unchanged', a
             async showSaveFilePicker(options) {
                 assert.equal(options.suggestedName, 'House.bup');
                 assert.deepEqual(options.types[0].accept, {'application/gzip': ['.bup', '.k3d', '.ketchup']});
-                assert.equal(options.id, 'benchup-project-save');
+                assert.equal(options.id, 'story-stick-project-save');
                 return {
                     name: chosenName,
                     async createWritable() {

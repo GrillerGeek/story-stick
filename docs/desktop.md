@@ -4,7 +4,7 @@
 
 ## Install a packaged release
 
-Download the installer or AppImage from [Releases](https://github.com/BenchUp3D/editor/releases).
+Download the installer or AppImage from [Releases](https://github.com/GrillerGeek/story-stick/releases).
 Workflow artifacts are also available on the run's summary page for 14 days.
 On Linux, keep the AppImage in a user-writable location, run `chmod +x` on it,
 and launch it. AppImage mounting may require your distro's FUSE 2 compatibility
@@ -25,7 +25,7 @@ stops future automatic checks; a check already in progress may finish, and an
 already downloaded update will still install on the next launch. Failed checks
 leave the app usable and can be retried manually. The **Update ready** button
 appears after a download completes. Installation happens on the next launch,
-or through **Restart now**. BenchUp does not force a restart during editing.
+or through **Restart now**. Story Stick does not force a restart during editing.
 
 Restart now offers to save modified work as a project file (`.bup` by default;
 `.ketchup` is also supported), or keep it in local recovery. It saves the model
@@ -33,7 +33,7 @@ and its project-file association before
 closing; a save failure prevents restart. Finish drawing/modeling previews
 before restarting. Autosave, update preferences, and restart information stay
 in the existing application data directory outside the installed application.
-`BENCHUP_DATA_DIR` redirects them for testing. Browser builds do not include
+`STORY_STICK_DATA_DIR` redirects them for testing. Browser builds do not include
 Velopack; development builds and unpackaged executables do not contact the
 update service.
 

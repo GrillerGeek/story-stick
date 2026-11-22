@@ -1,15 +1,15 @@
-# BenchUp
+# Story Stick
 
-![BenchUp editor screenshot](assets/screenshots/benchup.jpg "BenchUp v0.6.7 desktop workspace")
+![Story Stick editor screenshot](assets/screenshots/story-stick.jpg "Story Stick v0.6.7 desktop workspace")
 
-[![Try BenchUp in your browser](https://img.shields.io/badge/Try_BenchUp_in_your_browser-d63b32?style=for-the-badge)](https://benchup3d.github.io/editor/play/)
+[![Try Story Stick in your browser](https://img.shields.io/badge/Try_StoryStick_in_your_browser-d63b32?style=for-the-badge)](https://grillergeek.github.io/story-stick/play/)
 
 ## Download for desktop
 
-[![Download for Windows x64](https://img.shields.io/badge/Windows_x64-0078D4?style=for-the-badge)](https://github.com/BenchUp3D/editor/releases/latest/download/io.github.BenchUp3D.BenchUp-win-x64-Setup.exe)
-[![Download for macOS Apple Silicon](https://img.shields.io/badge/macOS_Apple_Silicon-6E40C9?style=for-the-badge)](https://github.com/BenchUp3D/editor/releases/latest/download/io.github.BenchUp3D.BenchUp-osx-arm64-Setup.pkg)
-[![Download for Linux x64](https://img.shields.io/badge/Linux_x64-E95420?style=for-the-badge)](https://github.com/BenchUp3D/editor/releases/latest/download/io.github.BenchUp3D.BenchUp-linux-x64.AppImage)
-[![See all downloads](https://img.shields.io/badge/All_downloads-555555?style=for-the-badge)](https://github.com/BenchUp3D/editor/releases/latest)
+[![Download for Windows x64](https://img.shields.io/badge/Windows_x64-0078D4?style=for-the-badge)](https://github.com/GrillerGeek/story-stick/releases/latest/download/io.github.GrillerGeek.StoryStick-win-x64-Setup.exe)
+[![Download for macOS Apple Silicon](https://img.shields.io/badge/macOS_Apple_Silicon-6E40C9?style=for-the-badge)](https://github.com/GrillerGeek/story-stick/releases/latest/download/io.github.GrillerGeek.StoryStick-osx-arm64-Setup.pkg)
+[![Download for Linux x64](https://img.shields.io/badge/Linux_x64-E95420?style=for-the-badge)](https://github.com/GrillerGeek/story-stick/releases/latest/download/io.github.GrillerGeek.StoryStick-linux-x64.AppImage)
+[![See all downloads](https://img.shields.io/badge/All_downloads-555555?style=for-the-badge)](https://github.com/GrillerGeek/story-stick/releases/latest)
 
 A free, open-source 3D modeling app for woodworking and furniture design, written in Rust. Plan individual boards, wood joints, and complete assemblies with exact measurements before heading to the workshop. The same editor runs as a native Windows, macOS, or Linux application and in a desktop browser through WebAssembly.
 
@@ -36,7 +36,7 @@ Assign stock materials and wood types to parts, configure sanding and finishing 
 ## Documentation
 
 This README covers developer installation, building, verification, and deployment.
-For instructions on using BenchUp, see the [user documentation](docs/README.md).
+For instructions on using Story Stick, see the [user documentation](docs/README.md).
 
 ## Prerequisites
 
@@ -52,7 +52,7 @@ Linux desktop builds use libudev through the `hidapi` dependency to discover Spa
 ## Run on desktop
 
 ```sh
-cargo run -p benchup-app
+cargo run -p story-stick-app
 ```
 
 On Linux, register the application launcher and icons once after compiling:
@@ -61,7 +61,7 @@ On Linux, register the application launcher and icons once after compiling:
 python3 scripts/install_linux_desktop.py
 ```
 
-This installs into your user data directory (`$XDG_DATA_HOME`, or `~/.local/share`) without root access. GNOME on Wayland uses the application's ID and matching desktop entry to find its icon. Restart BenchUp after installing. The launcher points to `target/debug/benchup-app`, so later development compilations update the same executable. For a release installation, pass its path: `python3 scripts/install_linux_desktop.py target/release/benchup-app`. Keep that executable in place, or rerun the installer with its new path if you move it.
+This installs into your user data directory (`$XDG_DATA_HOME`, or `~/.local/share`) without root access. GNOME on Wayland uses the application's ID and matching desktop entry to find its icon. Restart Story Stick after installing. The launcher points to `target/debug/story-stick`, so later development compilations update the same executable. For a release installation, pass its path: `python3 scripts/install_linux_desktop.py target/release/story-stick`. Keep that executable in place, or rerun the installer with its new path if you move it.
 
 ## Run in a browser
 
@@ -101,10 +101,10 @@ separate from display messages. Release-note content lives in its own feed.
 Desktop, on the OS you want to target:
 
 ```sh
-cargo build -p benchup-app --release --locked
+cargo build -p story-stick-app --release --locked
 ```
 
-The executable is `target/release/benchup-app` (`benchup-app.exe` on Windows). These commands produce executables, not installers or signed application bundles. Native builds should run on the corresponding OS; this project does not configure cross-linkers or signing identities.
+The executable is `target/release/story-stick` (`story-stick.exe` on Windows). These commands produce executables, not installers or signed application bundles. Native builds should run on the corresponding OS; this project does not configure cross-linkers or signing identities.
 
 ### Automated release builds
 
@@ -116,10 +116,10 @@ packages the desktop app with Velopack and the browser app with Trunk:
 
 | Artifact | Platform | Install / run |
 |---|---|---|
-| `benchup-windows-x64` | Windows x64 (MSVC) | `*-win-x64-Setup.exe` (per-user installer) |
-| `benchup-macos-arm64` | macOS Apple Silicon | `*-osx-arm64-Setup.pkg` or the portable `.app` zip |
-| `benchup-linux-x64` | Linux x64 (built on Ubuntu 22.04) | `*-linux-x64.AppImage` |
-| `benchup-wasm` | Desktop browsers (WebAssembly) | Extract `benchup-vX.Y.Z-wasm.zip` and serve it with a static web server |
+| `story-stick-windows-x64` | Windows x64 (MSVC) | `*-win-x64-Setup.exe` (per-user installer) |
+| `story-stick-macos-arm64` | macOS Apple Silicon | `*-osx-arm64-Setup.pkg` or the portable `.app` zip |
+| `story-stick-linux-x64` | Linux x64 (built on Ubuntu 22.04) | `*-linux-x64.AppImage` |
+| `story-stick-wasm` | Desktop browsers (WebAssembly) | Extract `story-stick-vX.Y.Z-wasm.zip` and serve it with a static web server |
 
 After all desktop and WebAssembly builds succeed, the workflow creates a GitHub Release for the
 pushed tag with the prepared release notes, installers, portable packages, full
@@ -148,7 +148,7 @@ in the app. Publishing uses GitHub's automatic token. Signing needs the credenti
 
 Without signing secrets, CI produces **unsigned packages for development**.
 Before public distribution, configure signing and set the repository Actions
-variable `BENCHUP_REQUIRE_SIGNING=true`. This makes packaging fail if Windows or
+variable `STORY_STICK_REQUIRE_SIGNING=true`. This makes packaging fail if Windows or
 macOS signing is missing. Checksums detect damaged downloads; they do not
 replace publisher signatures. Release access and signing credentials should be
 restricted to maintainers. Velopack's [signing guide](https://docs.velopack.io/packaging/signing)
@@ -198,11 +198,11 @@ dialogs still need this platform smoke test.
 
 ### Browser distribution
 
-Tagged GitHub Releases include `benchup-vX.Y.Z-wasm.zip`, containing the browser
+Tagged GitHub Releases include `story-stick-vX.Y.Z-wasm.zip`, containing the browser
 entry point, JavaScript loader, WebAssembly module, branding, translations, and
 license files. Extract the ZIP into a static web server's document directory;
 open its URL rather than opening `index.html` directly from disk. The archive
-is also available as the `benchup-wasm` workflow artifact and is covered by the
+is also available as the `story-stick-wasm` workflow artifact and is covered by the
 release's `SHA256SUMS`.
 
 To compile the browser distribution yourself:
@@ -217,7 +217,7 @@ Serve the resulting `dist/` directory with a static web server. Use HTTPS for We
 
 The presentation page lives in [`site/`](site/index.html). The
 [Deploy GitHub Pages](.github/workflows/pages.yml) workflow downloads the
-`benchup-wasm` artifact from the successful release run and extracts it into
+`story-stick-wasm` artifact from the successful release run and extracts it into
 `dist/site/play/`. Each tagged release compiles the browser app once; GitHub
 Releases and Pages use the same bundle. Manual Pages runs build the browser app
 from the selected ref instead. The workflow adds the landing page and existing
@@ -225,7 +225,7 @@ branding and screenshot assets to `dist/site/`, and deploys them together. The
 main browser entry point (`index.html`) and `trunk serve` continue to open the
 editor directly.
 
-To enable publishing for `BenchUp3D/editor`:
+To enable publishing for `GrillerGeek/story-stick`:
 
 1. In the repository, open **Settings → Pages → Build and deployment** and set
    **Source** to **GitHub Actions**. See the
@@ -238,8 +238,8 @@ To enable publishing for `BenchUp3D/editor`:
    for this automatic trigger to work. Ordinary branch pushes do not trigger
    either workflow.
 3. After the deployment succeeds, the landing page is at
-   <https://benchup3d.github.io/editor/> and its **Try in browser** links open
-   <https://benchup3d.github.io/editor/play/>. The workflow's environment link shows
+   <https://grillergeek.github.io/story-stick/> and its **Try in browser** links open
+   <https://grillergeek.github.io/story-stick/play/>. The workflow's environment link shows
    the actual URL if a custom domain is configured.
 
 All local page and editor asset links are relative, so the same package supports
@@ -264,11 +264,11 @@ python3 -B scripts/capture_readme_desktop.py
 
 On Linux, this requires X11 or XWayland, ImageMagick's `import` command, and
 Python Pillow. The script selects the newest existing executable from the native
-release and debug output directories; `--binary /path/to/benchup-app` selects one
+release and debug output directories; `--binary /path/to/story-stick` selects one
 explicitly. It launches the desktop app in an isolated temporary profile, loads
 [`assets/examples/Example.bup`](assets/examples/Example.bup) with its saved
 camera and display settings, dismisses open dialogs and popups, captures the
-settled window at 1920 × 1080, and updates `assets/screenshots/benchup.jpg` and its
+settled window at 1920 × 1080, and updates `assets/screenshots/story-stick.jpg` and its
 README link. Visually verify that no modal remains open before using the image.
 It never compiles the app, runs tests, or starts benchmarks. The screenshot
 reflects the existing executable; a missing executable is reported without
@@ -290,7 +290,7 @@ node --test scripts/test_web_shortcuts.cjs
 An optional offscreen GPU test renders the actual UI and custom viewport to PNGs without opening a window:
 
 ```sh
-cargo test -p benchup-app gpu_renders_empty_and_modeled_workspace --locked -- --ignored --nocapture
+cargo test -p story-stick-app gpu_renders_empty_and_modeled_workspace --locked -- --ignored --nocapture
 ```
 
 Snapshots appear in `target/qa/`. This test requires a working native GPU adapter. Normal tests cover document validation, geometry, inference, camera math, selection, undo/redo, and synthetic keyboard/pointer interactions through egui.
@@ -298,7 +298,7 @@ Snapshots appear in `target/qa/`. This test requires a working native GPU adapte
 Measure actual viewport frame intervals in the running Web app without starting a build:
 
 ```sh
-node scripts/benchmark_viewport_web.mjs --headed --project /path/to/Project.bup --seconds 25 --min-fps 45 --output /tmp/benchup-viewport.json
+node scripts/benchmark_viewport_web.mjs --headed --project /path/to/Project.bup --seconds 25 --min-fps 45 --output /tmp/story-stick-viewport.json
 ```
 
 The benchmark uses an isolated browser profile, preserves the complete project,
@@ -339,7 +339,7 @@ Run the repeatable CPU interaction benchmarks explicitly (10/100-face drawing,
 and 256/1,024 shadow casters over a large receiving face):
 
 ```sh
-cargo test -p benchup-app --locked --config 'profile.test.package.benchup-app.opt-level=2' --config 'profile.test.package.benchup-core.opt-level=2' workload_benchmark -- --ignored --nocapture --test-threads=1
+cargo test -p story-stick-app --locked --config 'profile.test.package.story-stick-app.opt-level=2' --config 'profile.test.package.story-stick-core.opt-level=2' workload_benchmark -- --ignored --nocapture --test-threads=1
 ```
 
 These settings optimize application geometry and rendering code while retaining
@@ -368,8 +368,8 @@ Verified during implementation: native Linux and browser WASM Cargo checks; core
 
 ## Layout
 
-- `crates/benchup-core`: double-precision document geometry, planar face discovery/triangulation, inference, picking, camera, tool definitions, and bounded history. It has no GUI or GPU dependencies.
-- `crates/benchup-app`: egui workspace, gesture routing, local persistence, native/browser launchers, and the wgpu/WGSL edge renderer. Model coordinates remain independent of GPU resources.
+- `crates/story-stick-core`: double-precision document geometry, planar face discovery/triangulation, inference, picking, camera, tool definitions, and bounded history. It has no GUI or GPU dependencies.
+- `crates/story-stick-app`: egui workspace, gesture routing, local persistence, native/browser launchers, and the wgpu/WGSL edge renderer. Model coordinates remain independent of GPU resources.
 - `index.html` and `Trunk.toml`: static browser host and WASM development configuration.
 
 The viewport uses depth-tested filled triangles and antialiased triangle strips for consistent edge widths, CPU projection/clipping, and the same shader and editor behavior on every target. Rendering is event-driven rather than a continuous idle loop.
@@ -381,42 +381,42 @@ repository at `/home/dcoulombe/dev/ketchup-server`. See its `README.md` for OAut
 configuration and startup instructions.
 
 The account server is deployment configuration, with no address field in the app.
-Launch the desktop app with `benchup-app --server-url https://accounts.example.com`
-or `cargo run -p benchup-app -- --server-url http://localhost:8081`.
+Launch the desktop app with `story-stick --server-url https://accounts.example.com`
+or `cargo run -p story-stick-app -- --server-url http://localhost:8081`.
 Both `--server-url URL` and `--server-url=URL` are supported.
 
 Alternatively, copy `.env.example` to `.env` in the workspace root and set
-`BENCHUP_SERVER_URL`. The example uses port 8080 for the local Web client through
+`STORY_STICK_SERVER_URL`. The example uses port 8080 for the local Web client through
 Trunk; for native-only development, use port 8081. Builds embed this value for desktop and Web; changing `.env`
 causes Cargo to refresh it on the next build. You can also supply it directly:
 
 ```sh
-BENCHUP_SERVER_URL=https://accounts.example.com cargo build -p benchup-app
-BENCHUP_SERVER_URL=https://accounts.example.com trunk build --release
+STORY_STICK_SERVER_URL=https://accounts.example.com cargo build -p story-stick-app
+STORY_STICK_SERVER_URL=https://accounts.example.com trunk build --release
 ```
 
-Desktop precedence is launch argument, runtime `BENCHUP_SERVER_URL`, `.env` in the
+Desktop precedence is launch argument, runtime `STORY_STICK_SERVER_URL`, `.env` in the
 current working directory, then the compiled value. Web uses the compiled value.
 There is no implicit server address; without configuration the modeling app runs
 with the account avatar, its separator, and the login dialog hidden. Saved user preferences
 cannot override the server address.
 
 For local desktop development, use `http://localhost:8081`. For the local Web
-client, compile with `BENCHUP_SERVER_URL=http://localhost:8080` to use the
+client, compile with `STORY_STICK_SERVER_URL=http://localhost:8080` to use the
 `Trunk.toml` account proxies to the server on port 8081. These proxies use
 `no_redirect = true` so Google login redirects reach the browser. Restart
 `trunk serve` after changing proxy configuration. Other browser deployments
 need a same-origin reverse proxy or the server's explicitly configured CORS and
 compatible cookie policies. Use HTTPS outside localhost.
 
-`.env` supports `BENCHUP_SERVER_URL=value`, single/double quoted values, optional
+`.env` supports `STORY_STICK_SERVER_URL=value`, single/double quoted values, optional
 `export`, and trailing comments. It is ignored by Git; do not put secrets in the
 URL because Web builds expose it to the browser.
 
 Desktop update feeds follow the repository that built the application. GitHub
 Actions embeds `github.repository`, so fork releases update from that fork's
 GitHub Releases. Local builds use the GitHub `origin` remote; source archives
-without Git metadata default to `BenchUp3D/editor`. Set `BENCHUP_UPDATE_REPOSITORY`
+without Git metadata default to `GrillerGeek/story-stick`. Set `STORY_STICK_UPDATE_REPOSITORY`
 to `owner/repository` at build time to select an explicit feed. The fork must
 publish its own compatible installer and update assets through the release
 workflow. Already installed upstream binaries retain their original update feed.
@@ -430,10 +430,10 @@ the default branch synchronize automatically. Set the repository variable
 and publish its own releases before its browser and download links are available.
 
 
-### BenchUp identity migration
+### Story Stick identity migration
 
-The application, desktop package, and bundle ID are now `BenchUp` /
-`io.github.BenchUp3D.BenchUp`; the executable is `benchup-app` and new
+The application, desktop package, and bundle ID are now `Story Stick` /
+`io.github.GrillerGeek.StoryStick`; the executable is `story-stick` and new
 projects use `.bup`. Existing `.k3d` and `.ketchup` projects remain readable.
 Desktop workspaces, update preferences, restart metadata, and inspector settings
 are copied from the old KetchUp locations on first launch without deleting the
@@ -441,7 +441,7 @@ original data. Browser storage migrates on the same origin; a change of hostname
 requires exporting projects before moving because browsers isolate local storage.
 The old `KETCHUP_DATA_DIR`, `KETCHUP_SERVER_URL`, and
 `KETCHUP_UPDATE_REPOSITORY` variables remain accepted as compatibility aliases;
-the `BENCHUP_*` equivalents take precedence.
+the `STORY_STICK_*` equivalents take precedence.
 
 The official migration is a transfer/rename of the **original** repository from
 `Ketchup3D/app` to `BenchUp3D/editor`. Transfer and rename may happen in either
@@ -454,7 +454,7 @@ The organization/repository transfer itself remains a GitHub administration step
 Before an official release builds, CI runs:
 
 ```sh
-python3 -B scripts/verify_update_transfer.py --repository BenchUp3D/editor
+python3 -B scripts/verify_update_transfer.py --repository GrillerGeek/story-stick
 ```
 
 This uses public, unauthenticated GitHub API requests, like the installed updater.
@@ -463,16 +463,16 @@ ID and the same releases. A missing redirect, an incorrect transfer, or a recrea
 old repository blocks the release before publication. Forks skip this official
 transfer requirement and continue using their own release source.
 
-The first BenchUp release must be newer than 0.6.5 (for example 0.6.6). Packaging
+The first Story Stick release must be newer than 0.6.5 (for example 0.6.6). Packaging
 explicitly uses `--delta None`; publication validation rejects delta feeds so old
 clients receive a complete replacement with the new app ID and executable. Keep
 the existing `win-x64`, `osx-arm64`, and `linux-x64` channels. New official builds
-normalize both intermediate repository names to `BenchUp3D/editor`.
+normalize both intermediate repository names to `GrillerGeek/story-stick`.
 
 The pinned Velopack 1.2.161 client is exercised in CI with an old 0.6.5 manifest,
 HTTP transfer/rename redirects, synthetic full packages and real checksums on all
 three channels. It checks discovery, download validation, pending-update discovery,
-and the new executable metadata. The test intentionally does not use BenchUp's
+and the new executable metadata. The test intentionally does not use Story Stick's
 new update-preparation code, which is absent from the already-installed clients.
 An actual installed-app replacement/restart with signed release packages remains
 a separate OS-level verification; the fixture test does not execute an installer.
