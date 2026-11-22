@@ -55,10 +55,8 @@ async function readDatabase() {
 }
 function readLegacy() {
     const result = new Map();
-    const migrated = localStorage.getItem(MIGRATED) !== null;
     for (const key of KEYS) {
-        const value = localStorage.getItem(key) ??
-            (migrated ? null : localStorage.getItem(key.replace('benchup.', 'ketchup.')));
+        const value = localStorage.getItem(key);
         if (value !== null) result.set(key, value);
     }
     return result;

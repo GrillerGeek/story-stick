@@ -7,10 +7,8 @@ mod update_repository;
 fn main() {
     println!("cargo:rerun-if-env-changed=BENCHUP_UPDATE_REPOSITORY");
     println!("cargo:rerun-if-env-changed=GITHUB_REPOSITORY");
-    println!("cargo:rerun-if-env-changed=KETCHUP_UPDATE_REPOSITORY");
     let root = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("../..");
     let repository = std::env::var("BENCHUP_UPDATE_REPOSITORY")
-        .or_else(|_| std::env::var("KETCHUP_UPDATE_REPOSITORY"))
         .or_else(|_| std::env::var("GITHUB_REPOSITORY"))
         .ok()
         .or_else(|| {
@@ -44,14 +42,10 @@ fn main() {
         }
     }
     println!("cargo:rerun-if-env-changed=BENCHUP_SERVER_URL");
-    println!("cargo:rerun-if-env-changed=KETCHUP_SERVER_URL");
     println!("cargo:rerun-if-changed=src/server_config.rs");
     let dotenv = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("../../.env");
     println!("cargo:rerun-if-changed={}", dotenv.display());
-    let server = match std::env::var("BENCHUP_SERVER_URL").or_else(|error| match error {
-        std::env::VarError::NotPresent => std::env::var("KETCHUP_SERVER_URL"),
-        error => Err(error),
-    }) {
+    let server = match std::env::var("BENCHUP_SERVER_URL") {
         Ok(value) => Some(server_config::nonempty(&value).expect("Invalid BENCHUP_SERVER_URL")),
         Err(std::env::VarError::NotPresent) => {
             server_config::read_dotenv(&dotenv).expect("Invalid server .env")

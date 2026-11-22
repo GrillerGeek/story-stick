@@ -67,9 +67,9 @@ class DesktopReleaseTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "full packages only"):
             release.validate_assets(self.directory, self.current, ["windows-x64"])
 
-    def test_pre_rename_package_id_cannot_be_published_as_a_new_release(self):
+    def test_foreign_package_id_cannot_be_published_as_a_new_release(self):
         feed, asset = self.assets("linux-x64")
-        asset["PackageId"] = "io.github.Ketchup3D.Ketchup"
+        asset["PackageId"] = "io.github.Upstream.App"
         feed.write_text(json.dumps({"Assets": [asset]}))
         with self.assertRaisesRegex(ValueError, "identity"):
             release.validate_assets(self.directory, self.current, ["linux-x64"])

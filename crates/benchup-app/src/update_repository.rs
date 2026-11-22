@@ -21,20 +21,7 @@ pub fn url(value: &str) -> Result<String, String> {
     {
         return Err("Set BENCHUP_UPDATE_REPOSITORY to a GitHub owner/repository".into());
     }
-    // Accept either order of the organization transfer and repository rename.
-    // Unrelated forks must continue to use their own release source.
-    let official_owner = ["Ketchup3D", "BenchUp3D"]
-        .iter()
-        .any(|owner| parts[0].eq_ignore_ascii_case(owner));
-    let official_name = ["app", "editor"]
-        .iter()
-        .any(|name| parts[1].eq_ignore_ascii_case(name));
-    let repository = if official_owner && official_name {
-        REPOSITORY
-    } else {
-        value
-    };
-    Ok(format!("https://github.com/{repository}"))
+    Ok(format!("https://github.com/{value}"))
 }
 
 #[cfg(test)]
@@ -42,23 +29,15 @@ mod tests {
     use super::*;
 
     #[test]
-    fn transfer_and_rename_in_either_order_resolve_to_the_new_official_feed() {
-        for owner in ["Ketchup3D", "BenchUp3D", "ketchup3d", "benchup3d"] {
-            for name in ["app", "editor"] {
-                for input in [
-                    format!("{owner}/{name}"),
-                    format!("https://github.com/{owner}/{name}/"),
-                    format!("git@github.com:{owner}/{name}.git"),
-                    format!("ssh://git@github.com/{owner}/{name}.git"),
-                ] {
-                    assert_eq!(url(&input).unwrap(), "https://github.com/BenchUp3D/editor");
-                }
-            }
+    fn upstream_repositories_are_not_remapped_to_another_feed() {
+        for (input, expected) in [
+            ("https://github.com/BenchUp3D/app/", "https://github.com/BenchUp3D/app"),
+            ("git@github.com:Ketchup3D/app.git", "https://github.com/Ketchup3D/app"),
+            ("ketchup3d/editor", "https://github.com/ketchup3d/editor"),
+        ] {
+            assert_eq!(url(input).unwrap(), expected);
         }
-        assert_eq!(
-            url(REPOSITORY).unwrap(),
-            "https://github.com/BenchUp3D/editor"
-        );
+        assert_eq!(url("ssh://git@github.com/someone/fork.git").unwrap(), "https://github.com/someone/fork");
     }
 
     #[test]

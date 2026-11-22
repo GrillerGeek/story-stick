@@ -2440,7 +2440,7 @@ impl BenchUpApp {
                 egui::Event::Cut => self.context_action(ctx, ContextAction::Cut),
                 egui::Event::Paste(text) => {
                     self.context_position = None;
-                    if let Some(json) = text.strip_prefix("benchup-geometry-v1\n").or_else(|| text.strip_prefix("ketchup-geometry-v1\n")) {
+                    if let Some(json) = text.strip_prefix("benchup-geometry-v1\n") {
                         match serde_json::from_str::<GeometryClipboard>(json) {
                             Ok(clipboard)
                                 if clipboard.anchor.is_finite()

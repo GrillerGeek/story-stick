@@ -3,8 +3,6 @@
 use std::path::{Path, PathBuf};
 
 pub const KEY: &str = "BENCHUP_SERVER_URL";
-#[cfg(any(not(target_arch = "wasm32"), test))]
-const LEGACY_KEY: &str = "KETCHUP_SERVER_URL";
 
 #[derive(Debug)]
 pub enum ConfigError {
@@ -29,17 +27,16 @@ pub enum ConfigError {
 #[cfg(any(not(target_arch = "wasm32"), test))]
 pub fn dotenv(contents: &str) -> Result<Option<String>, ConfigError> {
     let mut result = None;
-    let mut legacy = None;
     for (index, line) in contents.lines().enumerate() {
         let line = line.trim().trim_start_matches('\u{feff}');
         let line = line.strip_prefix("export ").unwrap_or(line).trim();
         let Some((key, raw)) = line.split_once('=') else {
-            if line == KEY || line == LEGACY_KEY {
+            if line == KEY {
                 return Err(ConfigError::MissingEquals(index + 1));
             }
             continue;
         };
-        if key.trim() != KEY && key.trim() != LEGACY_KEY {
+        if key.trim() != KEY {
             continue;
         }
         let raw = raw.trim();
@@ -57,13 +54,9 @@ pub fn dotenv(contents: &str) -> Result<Option<String>, ConfigError> {
         } else {
             raw.split_once(" #").map_or(raw, |(value, _)| value).trim()
         };
-        if key.trim() == KEY {
-            result = Some(nonempty(value)?);
-        } else {
-            legacy = Some(nonempty(value)?);
-        }
+        result = Some(nonempty(value)?);
     }
-    Ok(result.or(legacy))
+    Ok(result)
 }
 #[cfg(not(target_arch = "wasm32"))]
 pub fn read_dotenv(path: &Path) -> Result<Option<String>, ConfigError> {
@@ -108,7 +101,7 @@ pub fn configured_server() -> Result<String, ConfigError> {
         if let Some(value) = command_line(std::env::args().skip(1))? {
             return Ok(value);
         }
-        if let Some(value) = std::env::var_os(KEY).or_else(|| std::env::var_os(LEGACY_KEY)) {
+        if let Some(value) = std::env::var_os(KEY) {
             return nonempty(
                 &value
                     .into_string()
@@ -126,22 +119,14 @@ pub fn configured_server() -> Result<String, ConfigError> {
 mod tests {
     use super::*;
     #[test]
-    fn legacy_configuration_still_works_and_new_key_has_priority() {
+    fn upstream_legacy_server_key_is_ignored() {
+        assert_eq!(dotenv("KETCHUP_SERVER_URL=https://old.example").unwrap(), None);
         assert_eq!(
-            dotenv("KETCHUP_SERVER_URL=https://old.example")
+            dotenv("KETCHUP_SERVER_URL=https://old.example\nBENCHUP_SERVER_URL=https://new.example")
                 .unwrap()
                 .as_deref(),
-            Some("https://old.example")
+            Some("https://new.example")
         );
-        for source in [
-            "BENCHUP_SERVER_URL=https://new.example\nKETCHUP_SERVER_URL=https://old.example",
-            "KETCHUP_SERVER_URL=https://old.example\nBENCHUP_SERVER_URL=https://new.example",
-        ] {
-            assert_eq!(
-                dotenv(source).unwrap().as_deref(),
-                Some("https://new.example")
-            );
-        }
     }
 
     #[test]

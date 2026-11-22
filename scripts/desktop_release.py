@@ -88,7 +88,7 @@ def format_notes(release):
 
 
 def signing_required():
-    value = os.environ.get("BENCHUP_REQUIRE_SIGNING", os.environ.get("KETCHUP_REQUIRE_SIGNING", "")).lower()
+    value = os.environ.get("BENCHUP_REQUIRE_SIGNING", "").lower()
     if value not in ("", "true", "false"):
         raise ValueError("BENCHUP_REQUIRE_SIGNING must be true or false.")
     return value == "true"

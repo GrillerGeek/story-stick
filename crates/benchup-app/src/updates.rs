@@ -14,7 +14,7 @@ const CHECK_INTERVAL: Duration = Duration::from_secs(24 * 60 * 60);
 
 fn prepare_update(update: &mut UpdateInfo, installed_id: &str) -> Result<(), String> {
     let id = &update.TargetFullRelease.PackageId;
-    if id != crate::identity::APP_ID && id != crate::identity::LEGACY_APP_ID {
+    if id != crate::identity::APP_ID {
         return Err(format!("Unexpected update package identity: {id}"));
     }
     // Renaming the application/executable requires a complete replacement.
@@ -355,9 +355,9 @@ mod tests {
     use super::*;
 
     #[test]
-    fn legacy_and_current_installations_discover_new_identity_on_existing_channels() {
+    fn installations_discover_updates_on_their_channel() {
         use velopack::{locator::VelopackLocatorConfig, sources::FileSource};
-        for installed_id in [crate::identity::LEGACY_APP_ID, crate::identity::APP_ID] {
+        for installed_id in [crate::identity::APP_ID] {
             // Exercise Velopack itself, including its old-ID manifest and feed
             // selection, without a network request or launching an installer.
             let root = tempfile::tempdir().unwrap();
@@ -368,7 +368,7 @@ mod tests {
                 format!(
                     r#"<package><metadata>
                 <id>{installed_id}</id><version>0.6.5</version>
-                <mainExe>ketchup-app.exe</mainExe><channel>migration-test</channel>
+                <mainExe>benchup-app.exe</mainExe><channel>migration-test</channel>
                 </metadata></package>"#
                 ),
             )
@@ -403,7 +403,7 @@ mod tests {
             assert_eq!(manager.get_app_id(), installed_id);
             let UpdateCheck::UpdateAvailable(mut update) = manager.check_for_updates().unwrap()
             else {
-                panic!("The renamed package must be discoverable by an old installation");
+                panic!("The package must be discoverable by an installation");
             };
             assert_eq!(update.TargetFullRelease.PackageId, crate::identity::APP_ID);
             prepare_update(&mut update, installed_id).unwrap();
@@ -411,7 +411,7 @@ mod tests {
     }
 
     #[test]
-    fn identity_migration_requires_full_package_and_rejects_unrelated_ids() {
+    fn only_this_application_identity_is_accepted() {
         let mut update = UpdateInfo {
             TargetFullRelease: VelopackAsset {
                 PackageId: crate::identity::APP_ID.into(),
@@ -421,11 +421,11 @@ mod tests {
             DeltasToTarget: vec![VelopackAsset::default()],
             ..Default::default()
         };
-        prepare_update(&mut update, crate::identity::LEGACY_APP_ID).unwrap();
-        assert!(update.BaseRelease.is_none());
-        assert!(update.DeltasToTarget.is_empty());
-        update.TargetFullRelease.PackageId = "unrelated.application".into();
-        assert!(prepare_update(&mut update, crate::identity::APP_ID).is_err());
+        prepare_update(&mut update, crate::identity::APP_ID).unwrap();
+        for unrelated in ["io.github.Ketchup3D.Ketchup", "unrelated.application"] {
+            update.TargetFullRelease.PackageId = unrelated.into();
+            assert!(prepare_update(&mut update, crate::identity::APP_ID).is_err());
+        }
     }
 
     #[test]
@@ -525,7 +525,3 @@ mod tests {
         assert!(updater.restart().is_err());
     }
 }
-
-#[cfg(test)]
-#[path = "update_transfer_tests.rs"]
-mod transfer_tests;

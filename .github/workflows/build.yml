@@ -36,12 +36,6 @@ jobs:
         run: |
           python scripts/desktop_release.py version --tag "$TAG_NAME"
           python -m unittest discover -s scripts -p 'test_desktop_release.py'
-          python -m unittest discover -s scripts -p 'test_verify_update_transfer.py'
-
-      - name: Verify old updater URLs survived the repository transfer
-        env:
-          SOURCE_REPOSITORY: ${{ github.repository }}
-        run: python scripts/verify_update_transfer.py --repository "$SOURCE_REPOSITORY"
 
   build:
     name: Build ${{ matrix.platform }}
@@ -71,7 +65,7 @@ jobs:
 
     env:
       TAG_NAME: ${{ github.ref_name }}
-      BENCHUP_REQUIRE_SIGNING: ${{ vars.BENCHUP_REQUIRE_SIGNING || vars.KETCHUP_REQUIRE_SIGNING }}
+      BENCHUP_REQUIRE_SIGNING: ${{ vars.BENCHUP_REQUIRE_SIGNING }}
       AZURE_CREDENTIALS: ${{ secrets.AZURE_CREDENTIALS }}
       WINDOWS_AZURE_SIGNING: ${{ secrets.WINDOWS_AZURE_SIGNING }}
       MACOS_SIGN_APP_IDENTITY: ${{ secrets.MACOS_SIGN_APP_IDENTITY }}

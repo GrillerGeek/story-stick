@@ -27,7 +27,6 @@ pub(crate) fn invalidate_selection_source() {
 fn source_token(json: &str) -> String {
     if let Some((_, tail)) = json
         .rsplit_once(",\"_benchup_autosave\":\"")
-        .or_else(|| json.rsplit_once(",\"_ketchup_autosave\":\""))
         && let Some(token) = tail.strip_suffix("\"}")
     {
         return token.to_owned();
@@ -116,10 +115,6 @@ pub(crate) fn data_dir() -> Result<std::path::PathBuf, String> {
     let new = directories::ProjectDirs::from("", "BenchUp", "BenchUp")
         .map(|d| d.data_local_dir().to_path_buf())
         .ok_or_else(|| tr!("storage.cannot_locate_the_application_data_directory").to_owned())?;
-    if let Some(old) = directories::ProjectDirs::from("", "Ketchup", "Ketchup") {
-        crate::identity::migrate_directory(&new, old.data_local_dir())
-            .map_err(|error| format!("Cannot migrate workspace: {error}"))?;
-    }
     Ok(new)
 }
 
@@ -225,14 +220,15 @@ mod tests {
     use super::*;
 
     #[test]
-    fn renamed_autosave_preserves_legacy_snapshot_tokens_for_pending_overlays() {
+    fn autosave_tokens_bind_overlays_and_ignore_upstream_legacy_markers() {
         let mut doc = Document::default();
         doc.model
             .add_edge(benchup_core::DVec3::ZERO, benchup_core::DVec3::X)
             .unwrap();
         let (json, token) = autosave_json(&doc).unwrap();
+        assert_eq!(source_token(&json), token);
         let legacy = json.replace("_benchup_autosave", "_ketchup_autosave");
-        assert_eq!(source_token(&legacy), token);
+        assert_ne!(source_token(&legacy), token);
         let edge = *doc.model.edges.keys().next().unwrap();
         let overlay = serde_json::to_string(&SavedSelection {
             token,
@@ -241,7 +237,7 @@ mod tests {
         })
         .unwrap();
         assert_eq!(
-            restore_selection(&legacy, Some(&overlay))
+            restore_selection(&json, Some(&overlay))
                 .unwrap()
                 .selection,
             BTreeSet::from([edge])
