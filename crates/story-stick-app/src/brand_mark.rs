@@ -12,110 +12,71 @@ pub fn paint(p: &egui::Painter, rect: Rect) {
     );
     p.add(egui::Shape::convex_polygon(
         vec![
-            point(28., 54.),
-            point(40., 46.),
-            point(54., 46.),
-            point(42., 54.),
+            point(14., 58.),
+            point(26., 50.),
+            point(114., 50.),
+            point(102., 58.),
         ],
         Color32::from_rgb(255, 224, 205),
         egui::Stroke::NONE,
     ));
     p.add(egui::Shape::convex_polygon(
         vec![
-            point(42., 54.),
-            point(54., 46.),
-            point(54., 86.),
-            point(42., 94.),
-        ],
-        Color32::from_rgb(242, 163, 139),
-        egui::Stroke::NONE,
-    ));
-    p.add(egui::Shape::convex_polygon(
-        vec![
-            point(74., 54.),
-            point(86., 46.),
-            point(100., 46.),
-            point(88., 54.),
-        ],
-        Color32::from_rgb(255, 224, 205),
-        egui::Stroke::NONE,
-    ));
-    p.add(egui::Shape::convex_polygon(
-        vec![
-            point(88., 54.),
-            point(100., 46.),
-            point(100., 86.),
-            point(88., 94.),
-        ],
-        Color32::from_rgb(242, 163, 139),
-        egui::Stroke::NONE,
-    ));
-    p.add(egui::Shape::convex_polygon(
-        vec![
-            point(42., 72.),
-            point(54., 64.),
-            point(86., 64.),
-            point(74., 72.),
-        ],
-        Color32::from_rgb(255, 224, 205),
-        egui::Stroke::NONE,
-    ));
-    p.add(egui::Shape::convex_polygon(
-        vec![
-            point(74., 72.),
-            point(86., 64.),
-            point(86., 74.),
-            point(74., 82.),
-        ],
-        Color32::from_rgb(242, 163, 139),
-        egui::Stroke::NONE,
-    ));
-    p.add(egui::Shape::convex_polygon(
-        vec![
-            point(20., 42.),
-            point(32., 34.),
-            point(108., 34.),
-            point(96., 42.),
-        ],
-        Color32::from_rgb(255, 224, 205),
-        egui::Stroke::NONE,
-    ));
-    p.add(egui::Shape::convex_polygon(
-        vec![
-            point(96., 42.),
-            point(108., 34.),
-            point(108., 48.),
-            point(96., 56.),
+            point(102., 58.),
+            point(114., 50.),
+            point(114., 68.),
+            point(102., 76.),
         ],
         Color32::from_rgb(242, 163, 139),
         egui::Stroke::NONE,
     ));
     let mut face = egui::Mesh::default();
-    face.colored_vertex(point(28., 54.), Color32::from_rgb(255, 249, 242));
-    face.colored_vertex(point(42., 54.), Color32::from_rgb(255, 249, 242));
-    face.colored_vertex(point(42., 94.), Color32::from_rgb(255, 249, 242));
-    face.colored_vertex(point(28., 94.), Color32::from_rgb(255, 249, 242));
+    face.colored_vertex(point(14., 58.), Color32::from_rgb(255, 249, 242));
+    face.colored_vertex(point(102., 58.), Color32::from_rgb(255, 249, 242));
+    face.colored_vertex(point(102., 76.), Color32::from_rgb(255, 249, 242));
+    face.colored_vertex(point(14., 76.), Color32::from_rgb(255, 249, 242));
     face.indices = vec![3, 0, 1, 1, 2, 3];
     p.add(egui::Shape::mesh(face));
     let mut face = egui::Mesh::default();
-    face.colored_vertex(point(74., 54.), Color32::from_rgb(255, 249, 242));
-    face.colored_vertex(point(88., 54.), Color32::from_rgb(255, 249, 242));
-    face.colored_vertex(point(88., 94.), Color32::from_rgb(255, 249, 242));
-    face.colored_vertex(point(74., 94.), Color32::from_rgb(255, 249, 242));
+    face.colored_vertex(point(23., 58.), Color32::from_rgb(166, 46, 37));
+    face.colored_vertex(point(26., 58.), Color32::from_rgb(166, 46, 37));
+    face.colored_vertex(point(26., 65.), Color32::from_rgb(166, 46, 37));
+    face.colored_vertex(point(23., 65.), Color32::from_rgb(166, 46, 37));
     face.indices = vec![3, 0, 1, 1, 2, 3];
     p.add(egui::Shape::mesh(face));
     let mut face = egui::Mesh::default();
-    face.colored_vertex(point(42., 72.), Color32::from_rgb(255, 208, 166));
-    face.colored_vertex(point(74., 72.), Color32::from_rgb(255, 208, 166));
-    face.colored_vertex(point(74., 82.), Color32::from_rgb(255, 208, 166));
-    face.colored_vertex(point(42., 82.), Color32::from_rgb(255, 208, 166));
+    face.colored_vertex(point(37., 58.), Color32::from_rgb(166, 46, 37));
+    face.colored_vertex(point(40., 58.), Color32::from_rgb(166, 46, 37));
+    face.colored_vertex(point(40., 65.), Color32::from_rgb(166, 46, 37));
+    face.colored_vertex(point(37., 65.), Color32::from_rgb(166, 46, 37));
     face.indices = vec![3, 0, 1, 1, 2, 3];
     p.add(egui::Shape::mesh(face));
     let mut face = egui::Mesh::default();
-    face.colored_vertex(point(20., 42.), Color32::from_rgb(255, 249, 242));
-    face.colored_vertex(point(96., 42.), Color32::from_rgb(255, 249, 242));
-    face.colored_vertex(point(96., 56.), Color32::from_rgb(255, 249, 242));
-    face.colored_vertex(point(20., 56.), Color32::from_rgb(255, 249, 242));
+    face.colored_vertex(point(51., 58.), Color32::from_rgb(166, 46, 37));
+    face.colored_vertex(point(54., 58.), Color32::from_rgb(166, 46, 37));
+    face.colored_vertex(point(54., 70.), Color32::from_rgb(166, 46, 37));
+    face.colored_vertex(point(51., 70.), Color32::from_rgb(166, 46, 37));
+    face.indices = vec![3, 0, 1, 1, 2, 3];
+    p.add(egui::Shape::mesh(face));
+    let mut face = egui::Mesh::default();
+    face.colored_vertex(point(65., 58.), Color32::from_rgb(166, 46, 37));
+    face.colored_vertex(point(68., 58.), Color32::from_rgb(166, 46, 37));
+    face.colored_vertex(point(68., 65.), Color32::from_rgb(166, 46, 37));
+    face.colored_vertex(point(65., 65.), Color32::from_rgb(166, 46, 37));
+    face.indices = vec![3, 0, 1, 1, 2, 3];
+    p.add(egui::Shape::mesh(face));
+    let mut face = egui::Mesh::default();
+    face.colored_vertex(point(79., 58.), Color32::from_rgb(166, 46, 37));
+    face.colored_vertex(point(82., 58.), Color32::from_rgb(166, 46, 37));
+    face.colored_vertex(point(82., 65.), Color32::from_rgb(166, 46, 37));
+    face.colored_vertex(point(79., 65.), Color32::from_rgb(166, 46, 37));
+    face.indices = vec![3, 0, 1, 1, 2, 3];
+    p.add(egui::Shape::mesh(face));
+    let mut face = egui::Mesh::default();
+    face.colored_vertex(point(93., 58.), Color32::from_rgb(166, 46, 37));
+    face.colored_vertex(point(96., 58.), Color32::from_rgb(166, 46, 37));
+    face.colored_vertex(point(96., 65.), Color32::from_rgb(166, 46, 37));
+    face.colored_vertex(point(93., 65.), Color32::from_rgb(166, 46, 37));
     face.indices = vec![3, 0, 1, 1, 2, 3];
     p.add(egui::Shape::mesh(face));
 }

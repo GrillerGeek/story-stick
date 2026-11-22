@@ -14,14 +14,13 @@ RED = '#D94836'
 FRONT = '#FFF9F2'
 TOP = '#FFE0CD'
 SIDE = '#F2A38B'
-# An extruded workbench: a solid top, two legs, and a connecting rail.
+TICK = '#A62E25'
+# A story stick: a marked layout board, with one longer reference tick.
 # Shared geometry drives the SVG, raster assets, egui toolbar and PDF logo.
-FACES = [
-    (FRONT, [(28, 54), (42, 54), (42, 94), (28, 94)]),
-    (FRONT, [(74, 54), (88, 54), (88, 94), (74, 94)]),
-    ('#FFD0A6', [(42, 72), (74, 72), (74, 82), (42, 82)]),
-    (FRONT, [(20, 42), (96, 42), (96, 56), (20, 56)]),
-]
+BOARD = (FRONT, [(14, 58), (102, 58), (102, 76), (14, 76)])
+TICKS = [(TICK, [(x, 58), (x + 3, 58), (x + 3, 58 + h), (x, 58 + h)])
+         for x, h in [(23, 7), (37, 7), (51, 12), (65, 7), (79, 7), (93, 7)]]
+FACES = [BOARD] + TICKS
 DEPTH = (12, -8)
 
 
@@ -52,7 +51,9 @@ def triangles(points):
 
 def surfaces():
     faces = []
-    for _, face in FACES:
+    for color, face in FACES:
+      if color == TICK:
+        continue  # Marks are flat on the front face.
       for a, b in zip(face, face[1:] + face[:1]):
         # Only the edges facing the extrusion vector are visible.
         if (b[1] - a[1]) * DEPTH[0] - (b[0] - a[0]) * DEPTH[1] > 0:
@@ -67,7 +68,7 @@ def svg(square=True):
     paths = surfaces() + FACES
     if not square:
         paths = [('#F07961' if color == TOP else '#A62E25', points)
-                 for color, points in surfaces()] + [(RED, face) for _, face in FACES]
+                 for color, points in surfaces()] + [(FRONT if color == TICK else RED, face) for color, face in FACES]
     polygons = '\n'.join(f'  <polygon fill="{color}" points="' +
                          ' '.join(f'{x},{y}' for x, y in points) + '"/>'
                          for color, points in paths)
