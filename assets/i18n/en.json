@@ -1346,7 +1346,7 @@
   "sharing.share": "Share…",
   "sharing.share_2": "Share… ({pending})",
   "sharing.share_project": "Share project",
-  "sharing.share_uploads_this_project_to_your_configured_story_stick": "Share uploads this project to your configured Story Stick Server. Visitors must request access.",
+  "sharing.share_uploads_this_project_to_your_configured_story_stick": "Share uploads this project to your configured account server. Visitors must request access.",
   "sharing.shared": "Shared · {}",
   "sharing.sign_in_to_your_account": "Sign in to your account",
   "sharing.sync": "Sync: {error}",

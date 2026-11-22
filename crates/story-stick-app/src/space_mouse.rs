@@ -649,6 +649,8 @@ mod driver {
         c"/Library/Frameworks/3DconnexionClient.framework/3DconnexionClient";
     /// kConnexionClientManual: Story Stick activates itself while focused.
     const MANUAL_CLIENT: u32 = 0x2B2B_2B2B;
+    /// Pascal string: the first byte is the length of the name that follows.
+    const CLIENT_NAME: &std::ffi::CStr = c"\x0bStory Stick";
     const MODE_TAKE_OVER: u16 = 1;
     const MASK_ALL: u32 = 0x3FFF;
     const MASK_ALL_BUTTONS: u32 = 0xFFFF_FFFF;
@@ -761,6 +763,14 @@ mod driver {
         focused: Option<bool>,
     }
 
+    #[cfg(test)]
+    #[test]
+    fn client_name_length_prefix_matches_the_name() {
+        let bytes = CLIENT_NAME.to_bytes();
+        assert_eq!(bytes[0] as usize, bytes.len() - 1);
+        assert_eq!(&bytes[1..], b"Story Stick");
+    }
+
     impl Client {
         pub fn start(ctx: egui::Context, shared: Arc<Mutex<Shared>>) -> Option<Self> {
             let api = api()?;
@@ -769,7 +779,7 @@ mod driver {
                 *ACTIVE.lock().unwrap_or_else(|poisoned| poisoned.into_inner()) = None;
                 return None;
             }
-            let id = (api.register)(MANUAL_CLIENT, c"\x07Story Stick".as_ptr().cast(), MODE_TAKE_OVER, MASK_ALL);
+            let id = (api.register)(MANUAL_CLIENT, CLIENT_NAME.as_ptr().cast(), MODE_TAKE_OVER, MASK_ALL);
             if id == 0 {
                 (api.cleanup_handlers)();
                 *ACTIVE.lock().unwrap_or_else(|poisoned| poisoned.into_inner()) = None;
