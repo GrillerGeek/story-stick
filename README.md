@@ -1,6 +1,6 @@
 # Story Stick
 
-![Story Stick editor screenshot](assets/screenshots/story-stick.jpg "Story Stick v0.6.7 desktop workspace")
+![Story Stick editor screenshot](assets/screenshots/story-stick.jpg "Story Stick v0.6.8 desktop workspace")
 
 [![Try Story Stick in your browser](https://img.shields.io/badge/Try_Story_Stick_in_your_browser-d63b32?style=for-the-badge)](https://grillergeek.github.io/story-stick/play/)
 

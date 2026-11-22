@@ -1,5 +1,27 @@
 [
   {
+    "version": "0.6.8",
+    "date": "2026-11-21",
+    "title": "A new name and logo",
+    "sections": [
+      {
+        "title": "New name and home",
+        "changes": [
+          "BenchUp is now Story Stick, a woodworking design tool for planning projects away from the shop, with a new story-stick logo and app icons.",
+          "Updates, bug reports, feature suggestions, downloads, and the website now come from the Story Stick repository.",
+          "Existing .bup, .k3d, and .ketchup projects open as before; new projects are still saved as .bup."
+        ]
+      },
+      {
+        "title": "Cleanup",
+        "changes": [
+          "Removed migration code for older KetchUp and BenchUp installations. Story Stick keeps its own preferences and local recovery data.",
+          "The 3D Mouse driver on macOS now shows the full Story Stick name."
+        ]
+      }
+    ]
+  },
+  {
     "version": "0.6.7",
     "date": "2026-11-10",
     "title": "Reference images, scale handles, and 3D Mouse navigation",
