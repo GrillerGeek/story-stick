@@ -617,7 +617,7 @@
   "currency.uae_dirham": "UAE dirham",
   "currency.us_dollar": "US dollar",
   "currency.vietnamese_dong": "Vietnamese dong",
-  "cutting_layout.stock_dimensions_must_be_1_1_000_000": "Stock dimensions must be 1-1,000,000 mm and saw kerf 0-100 mm.",
+  "cutting_layout.stock_dimensions_must_be_1_1_000_000": "Stock dimensions must be 1-1,000,000 mm, and saw kerf and edge trim 0-100 mm.",
   "cutting_plan.approx_nominal": "Approx. {stock} nominal",
   "cutting_plan.board": "BOARD",
   "cutting_plan.boards_required": {
@@ -634,6 +634,7 @@
   "cutting_plan.cutting_plan": "Cutting Plan",
   "cutting_plan.date_unavailable": "Date unavailable",
   "cutting_plan.does_not_fit_selected_stock": "DOES NOT FIT SELECTED STOCK",
+  "cutting_plan.edge_trim_suffix": " | Edge trim: {trim} per side",
   "cutting_plan.footer_note": "Finished sizes - verify before cutting",
   "cutting_plan.group": "GROUP",
   "cutting_plan.mark": "MARK",
@@ -666,6 +667,7 @@
     "one": "Stock required: {count} stock piece | Saw kerf: {kerf}",
     "other": "Stock required: {count} stock pieces | Saw kerf: {kerf}"
   },
+  "cutting_plan.stock_x_kerf_edge_trim": "Stock: {} x {} | Kerf: {} | Gray: offcut / kerf | Dark gray: {} edge trim",
   "cutting_plan.stock_x_kerf_gray_offcut_kerf": "Stock: {} x {} | Kerf: {} | Gray: offcut / kerf",
   "cutting_plan.the_project_name_is_too_long_to_fit": "The project name is too long to fit above the workshop labels.",
   "cutting_plan.unnamed_part": "Unnamed part",
@@ -1093,6 +1095,8 @@
   "projects.cutting_plan_pdf_opened_in_a_new_tab": "Cutting plan PDF opened in a new tab",
   "projects.cutting_plan_pdf_saved_and_opened": "Cutting plan PDF saved and opened",
   "projects.discard_changes": "Discard changes",
+  "projects.edge_trim_each_side": "Edge trim (each side)",
+  "projects.edge_trim_hint": "Cuts this much off all four edges of each stock piece before parts are laid out. Use it to remove damaged or out-of-square factory edges. Include the saw kerf of the trim cut. Set 0 to use the full stock.",
   "projects.exporting_geometry": "Exporting geometry…",
   "projects.exporting_screenshot": "Exporting screenshot…",
   "projects.generate_pdf": "Generate PDF…",

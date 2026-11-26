@@ -15,6 +15,7 @@ fn settings(length: f64, width: f64, kerf: f64) -> Settings {
         board_length_mm: length,
         kerf_mm: kerf,
         allow_rotation: false,
+        edge_trim_mm: 0.,
     }
 }
 
@@ -136,6 +137,83 @@ fn narrow_stock_layouts_keep_codes_quantities_and_kerf_for_mixed_lengths() {
 }
 
 #[test]
+fn edge_trim_shrinks_the_usable_area_on_every_side() {
+    let full = [piece(0, 10000, 1000, 1)];
+    let trimmed = Settings {
+        edge_trim_mm: 5.,
+        ..settings(1000., 100., 3.)
+    };
+    // A part that uses the full stock no longer fits once the edges are trimmed.
+    assert_eq!(sheets(&full, settings(1000., 100., 3.)).stock.len(), 1);
+    let layout = sheets(&full, trimmed);
+    assert!(layout.stock.is_empty());
+    assert_eq!(layout.oversized, full);
+    // A part the size of the trimmed area fits and starts inside the trim.
+    let layout = sheets(&[piece(3, 9900, 900, 1)], trimmed);
+    assert!(layout.oversized.is_empty());
+    let stock = &layout.stock[0];
+    assert_eq!((stock.length, stock.width, stock.trim), (10000, 1000, 50));
+    assert_eq!(
+        stock.placements[0].rect,
+        Rect {
+            x: 50,
+            y: 50,
+            length: 9900,
+            width: 900,
+        }
+    );
+    // Trim wider than half the stock leaves no usable area.
+    let tiny = Settings {
+        edge_trim_mm: 60.,
+        ..settings(1000., 100., 3.)
+    };
+    assert_eq!(sheets(&[piece(0, 10, 10, 1)], tiny).oversized.len(), 1);
+}
+
+#[test]
+fn edge_trim_can_require_more_stock_and_keeps_every_piece_inside_the_trim() {
+    let options = Settings {
+        allow_rotation: true,
+        edge_trim_mm: 12.,
+        ..Settings::default()
+    };
+    // Four 1210 x 600 mm panels fill one sheet, but need four once trimmed.
+    let cuts = [piece(0, 12100, 6000, 4)];
+    let untrimmed = Settings {
+        edge_trim_mm: 0.,
+        kerf_mm: 0.,
+        ..options
+    };
+    assert_eq!(sheets(&cuts, untrimmed).stock.len(), 1);
+    let trimmed = Settings {
+        kerf_mm: 0.,
+        ..options
+    };
+    assert_eq!(sheets(&cuts, trimmed).stock.len(), 4);
+    let mixed: Vec<_> = (0..20)
+        .map(|i| {
+            piece(
+                i,
+                1000 + ((i * 211) % 8000) as u64,
+                400 + ((i * 97) % 5000) as u64,
+                2,
+            )
+        })
+        .collect();
+    let layout = sheets(&mixed, options);
+    let trim = tenths(options.edge_trim_mm);
+    for stock in &layout.stock {
+        assert_eq!(stock.trim, trim);
+        for p in &stock.placements {
+            let r = p.rect;
+            assert!(r.x >= trim && r.y >= trim, "{r:?}");
+            assert!(r.x + r.length <= stock.length - trim, "{r:?}");
+            assert!(r.y + r.width <= stock.width - trim, "{r:?}");
+        }
+    }
+}
+
+#[test]
 fn invalid_stock_settings_are_rejected() {
     for options in [
         Settings {
@@ -152,6 +230,18 @@ fn invalid_stock_settings_are_rejected() {
         },
         Settings {
             kerf_mm: f64::INFINITY,
+            ..Settings::default()
+        },
+        Settings {
+            edge_trim_mm: -1.,
+            ..Settings::default()
+        },
+        Settings {
+            edge_trim_mm: 101.,
+            ..Settings::default()
+        },
+        Settings {
+            edge_trim_mm: f64::NAN,
             ..Settings::default()
         },
     ] {

@@ -10,6 +10,10 @@ pub(crate) struct Settings {
     pub board_length_mm: f64,
     pub kerf_mm: f64,
     pub allow_rotation: bool,
+    /// Material removed from every edge of each stock piece before layout, to
+    /// cut away damaged or out-of-square factory edges. It includes the kerf of
+    /// the trim cut.
+    pub edge_trim_mm: f64,
 }
 impl Default for Settings {
     fn default() -> Self {
@@ -19,6 +23,7 @@ impl Default for Settings {
             board_length_mm: 2440.,
             kerf_mm: 3.,
             allow_rotation: true,
+            edge_trim_mm: 0.,
         }
     }
 }
@@ -31,8 +36,9 @@ impl Settings {
         ]
         .iter()
         .any(|v| !v.is_finite() || !(1. ..=1_000_000.).contains(v))
-            || !self.kerf_mm.is_finite()
-            || !(0. ..=100.).contains(&self.kerf_mm)
+            || [self.kerf_mm, self.edge_trim_mm]
+                .iter()
+                .any(|v| !v.is_finite() || !(0. ..=100.).contains(v))
         {
             return Err(tr!("cutting_layout.stock_dimensions_must_be_1_1_000_000").into());
         }
@@ -65,20 +71,23 @@ pub(crate) struct Placement {
 pub(crate) struct Stock {
     pub length: u64,
     pub width: u64,
+    /// Trimmed band on every edge. Placements stay inside it.
+    pub trim: u64,
     pub placements: Vec<Placement>,
     free: Vec<Rect>,
 }
 impl Stock {
-    fn new(length: u64, width: u64) -> Self {
+    fn new(length: u64, width: u64, trim: u64) -> Self {
         Self {
             length,
             width,
+            trim,
             placements: Vec::new(),
             free: vec![Rect {
-                x: 0,
-                y: 0,
-                length,
-                width,
+                x: trim,
+                y: trim,
+                length: length - 2 * trim,
+                width: width - 2 * trim,
             }],
         }
     }
@@ -95,9 +104,16 @@ pub(crate) fn tenths(mm: f64) -> u64 {
 
 /// Each split is a full straight cut across the current free rectangle. Kerf is
 /// reserved between retained pieces; a cut at the stock edge needs no extra gap.
+/// Edge trim shrinks the usable area on all four sides; a stock piece that is
+/// too small to trim has no usable area, so every piece is oversized.
 pub(crate) fn sheets(pieces: &[Piece], settings: Settings) -> Layout {
-    let length = tenths(settings.sheet_length_mm);
-    let width = tenths(settings.sheet_width_mm);
+    let stock_length = tenths(settings.sheet_length_mm);
+    let stock_width = tenths(settings.sheet_width_mm);
+    let trim = tenths(settings.edge_trim_mm)
+        .min(stock_length / 2)
+        .min(stock_width / 2);
+    let length = stock_length - 2 * trim;
+    let width = stock_width - 2 * trim;
     let kerf = tenths(settings.kerf_mm);
     let mut pieces = pieces.to_vec();
     pieces.sort_by_key(|p| {
@@ -115,7 +131,9 @@ pub(crate) fn sheets(pieces: &[Piece], settings: Settings) -> Layout {
         ];
         if !orientations.iter().any(|(l, w, rotated)| {
             (!*rotated || settings.allow_rotation) && *l <= length && *w <= width
-        }) {
+        }) || length == 0
+            || width == 0
+        {
             layout.oversized.push(piece);
             continue;
         }
@@ -151,7 +169,9 @@ pub(crate) fn sheets(pieces: &[Piece], settings: Settings) -> Layout {
                         (!*r || settings.allow_rotation) && *l <= length && *w <= width
                     })
                     .unwrap();
-                layout.stock.push(Stock::new(length, width));
+                layout
+                    .stock
+                    .push(Stock::new(stock_length, stock_width, trim));
                 (layout.stock.len() - 1, 0, l, w, r)
             };
             let stock = &mut layout.stock[stock_index];

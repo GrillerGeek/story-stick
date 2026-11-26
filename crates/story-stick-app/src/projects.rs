@@ -503,6 +503,13 @@ impl StoryStickApp {
                             ui.add(egui::DragValue::new(&mut self.project.cutting_plan_layout.kerf_mm)
                                 .speed(0.1).range(0. ..=100.).suffix(tr!("projects.mm")));
                         });
+                        ui.horizontal(|ui| {
+                            ui.text_label(tr!("projects.edge_trim_each_side"));
+                            ui.add(egui::DragValue::new(&mut self.project.cutting_plan_layout.edge_trim_mm)
+                                .speed(0.1).range(0. ..=100.).suffix(tr!("projects.mm")));
+                        })
+                        .response
+                        .on_hover_text(tr!("projects.edge_trim_hint"));
                         ui.checkbox(&mut self.project.cutting_plan_layout.allow_rotation, tr!("projects.allow_rotating_pieces_90_degrees"))
                             .on_hover_text(tr!("projects.leave_off_when_the_length_must_follow_the"));
                     }

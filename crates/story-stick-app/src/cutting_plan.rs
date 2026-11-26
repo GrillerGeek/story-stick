@@ -347,11 +347,17 @@ impl CuttingPlan {
                 if let Some(layout) = &layout {
                     let count = layout.stock.len();
                     let kerf = metric_length(cutting_layout::tenths(settings.kerf_mm));
-                    let summary = if sheet_stock {
+                    let mut summary = if sheet_stock {
                         tr!("cutting_plan.stock_required", count = count, kerf = kerf)
                     } else {
                         tr!("cutting_plan.boards_required", count = count, kerf = kerf)
                     };
+                    if settings.edge_trim_mm > 0. {
+                        summary.push_str(&tr!(
+                            "cutting_plan.edge_trim_suffix",
+                            trim = metric_length(cutting_layout::tenths(settings.edge_trim_mm))
+                        ));
+                    }
                     pdf.paragraph(&summary, 9.);
                 }
                 if layout.as_ref().is_some_and(|l| !l.oversized.is_empty()) {
@@ -588,19 +594,42 @@ fn draw_layout(
             12.,
         );
         pdf.paragraph(title, 9.);
-        pdf.paragraph(
-            &tr!(
+        let kerf = metric_length(cutting_layout::tenths(settings.kerf_mm));
+        let legend = if stock.trim > 0 {
+            tr!(
+                "cutting_plan.stock_x_kerf_edge_trim",
+                metric_length(stock.length),
+                metric_length(stock.width),
+                kerf,
+                metric_length(stock.trim)
+            )
+        } else {
+            tr!(
                 "cutting_plan.stock_x_kerf_gray_offcut_kerf",
                 metric_length(stock.length),
                 metric_length(stock.width),
-                metric_length(cutting_layout::tenths(settings.kerf_mm))
-            ),
-            8.,
-        );
+                kerf
+            )
+        };
+        pdf.paragraph(&legend, 8.);
         let top = pdf.y;
-        pdf.rectangle(42., top - height, width, height, [0.94; 3]);
         let x_scale = width / stock.length as f64;
         let y_scale = height / stock.width as f64;
+        if stock.trim > 0 {
+            // Darker band for the trimmed factory edges, lighter usable area.
+            pdf.rectangle(42., top - height, width, height, [0.78; 3]);
+            let tx = stock.trim as f64 * x_scale;
+            let ty = stock.trim as f64 * y_scale;
+            pdf.rectangle(
+                42. + tx,
+                top - height + ty,
+                (width - 2. * tx).max(0.),
+                (height - 2. * ty).max(0.),
+                [0.94; 3],
+            );
+        } else {
+            pdf.rectangle(42., top - height, width, height, [0.94; 3]);
+        }
         for placement in &stock.placements {
             let r = placement.rect;
             let x = 42. + r.x as f64 * x_scale;
