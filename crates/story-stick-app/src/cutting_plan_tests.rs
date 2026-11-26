@@ -743,6 +743,43 @@ fn stock_grouping_preserves_visible_only_collection() {
 }
 
 #[test]
+fn edge_trim_reduces_usable_sheet_area_in_the_pdf_and_purchase_counts() {
+    // Four 1210 x 600 mm panels fit on one 2440 x 1220 mm sheet, but not
+    // after 12 mm is trimmed from every edge.
+    let plan = CuttingPlan {
+        groups: vec![CutGroup {
+            material_id: None,
+            material: story_stick_core::StockMaterial {
+                name: "Birch plywood".into(),
+                dimensions: [180, 12200, 24400],
+            },
+            dimensions: [180, 6000, 12100],
+            rectangular: true,
+            parts: vec!["A".into(), "B".into(), "C".into(), "D".into()],
+        }],
+        skipped: 0,
+    };
+    let untrimmed = LayoutSettings {
+        kerf_mm: 0.,
+        allow_rotation: false,
+        ..LayoutSettings::default()
+    };
+    let trimmed = LayoutSettings {
+        edge_trim_mm: 12.,
+        ..untrimmed
+    };
+    assert_eq!(plan.material_requirements(untrimmed)[0].quantity, 1);
+    assert_eq!(plan.material_requirements(trimmed)[0].quantity, 4);
+    let plain = String::from_utf8(plan.pdf_with_layout("Cabinet", false, true, untrimmed)).unwrap();
+    assert!(plain.contains("Stock required: 1 stock piece"));
+    assert!(!plain.contains("Edge trim"));
+    let pdf = String::from_utf8(plan.pdf_with_layout("Cabinet", false, true, trimmed)).unwrap();
+    assert!(pdf.contains("Stock required: 4 stock pieces"));
+    assert!(pdf.contains("Edge trim: 12 mm per side"));
+    assert!(pdf.contains("Dark gray: 12 mm edge trim"));
+}
+
+#[test]
 fn stock_pdf_includes_colored_coded_diagrams_and_uses_the_selected_kerf() {
     let plan = CuttingPlan {
         groups: vec![CutGroup {
@@ -790,6 +827,7 @@ fn stock_pdf_includes_colored_coded_diagrams_and_uses_the_selected_kerf() {
     .unwrap();
     assert!(no_kerf.contains("Stock required: 1 stock piece"));
     assert!(!no_kerf.contains("STOCK 2"));
+    assert!(!with_kerf.contains("Edge trim"));
     let plain = String::from_utf8(plan.pdf_with_layout("Bench", false, false, settings)).unwrap();
     assert!(!plain.contains("STOCK 1"));
     assert!(!plain.contains(" re B Q"));

@@ -2146,7 +2146,7 @@ mod preference_tests {
 
     #[test]
     fn each_additional_option_saves_independently_without_a_model_edit() {
-        let options: [(&str, fn(&mut StoryStickApp)); 15] = [
+        let options: [(&str, fn(&mut StoryStickApp)); 16] = [
             ("face center snapping", |app| app.snap_to_face_center = false),
             ("axis snapping", |app| app.doc.snap_to_axes = false),
             ("edge snapping", |app| app.snap_to_edge = false),
@@ -2172,6 +2172,9 @@ mod preference_tests {
             }),
             ("saw kerf", |app| {
                 app.project.cutting_plan_layout.kerf_mm = 4.5
+            }),
+            ("edge trim", |app| {
+                app.project.cutting_plan_layout.edge_trim_mm = 6.
             }),
             ("whole project scope", |app| {
                 app.project.cutting_plan_selection_preference = Some(false)
